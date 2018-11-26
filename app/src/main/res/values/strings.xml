@@ -12,4 +12,5 @@
     <string name="action_set_current_month_period">Current Month</string>
     <string name="action_set_all_time_period">All time</string>
     <string name="action_set_custom_period">Range</string>
+    <string name="main_activity_title">Overview</string>
 </resources>

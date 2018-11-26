@@ -10,4 +10,5 @@
     <string name="action_set_current_month_period">Mes Actual</string>
     <string name="action_set_all_time_period">Todo</string>
     <string name="action_set_custom_period">Rango</string>
+    <string name="main_activity_title">Resumen</string>
 </resources>
