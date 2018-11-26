@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BalanceManager</string>
+    <string name="nav_manage_accounts">Cuentas</string>
+    <string name="navigation_drawer_open">Abrir panel de navegación</string>
+    <string name="navigation_drawer_close">Cerrar panel de navegación</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="nav_manage_expenses">Gastos</string>
+    <string name="nav_see_statistics">Estadísticas</string>
+    <string name="action_set_current_month_period">Mes Actual</string>
+    <string name="action_set_all_time_period">Todo</string>
+    <string name="action_set_custom_period">Rango</string>
+</resources>

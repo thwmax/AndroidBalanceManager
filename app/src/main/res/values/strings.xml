@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">BalanceManager</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="nav_manage_accounts">Accounts</string>
+    <string name="nav_manage_expenses">Expenses</string>
+    <string name="nav_see_statistics">Statistics</string>
+    <string name="action_set_current_month_period">Current Month</string>
+    <string name="action_set_all_time_period">All time</string>
+    <string name="action_set_custom_period">Range</string>
+</resources>
