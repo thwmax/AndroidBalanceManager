@@ -19,11 +19,11 @@ interface MoneyAccountDao {
     fun delete(moneyAccountDaoId: Int)
 
     @Query("SELECT * from money_account where is_credit is 0 and live is 1")
-    fun getAccounts(): LiveData<MoneyAccount>
+    fun getAccounts(): List<LiveData<MoneyAccount>>
 
     @Query("SELECT * from money_account where is_credit is 0 and live is 1")
-    fun getActiveAccounts(): LiveData<MoneyAccount>
+    fun getActiveAccounts(): List<LiveData<MoneyAccount>>
 
     @Query("SELECT * from money_account where is_credit is 1 and live is 1")
-    fun getCreditAccounts(): LiveData<MoneyAccount>
+    fun getCreditAccounts(): List<LiveData<MoneyAccount>>
 }
