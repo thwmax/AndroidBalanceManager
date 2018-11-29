@@ -12,7 +12,7 @@ import java.util.*
     childColumns = arrayOf("account_id"),
     onDelete = CASCADE)]
 )
-data class MoneyTransaction(@PrimaryKey var id: Int,
+data class MoneyTransaction(@PrimaryKey(autoGenerate = true) var id: Int,
                             var amount: Float,
                             @ColumnInfo(name = "creation_date") var creationDate: Date,
                             @ColumnInfo(name = "operation_date") var operationDate: Date,

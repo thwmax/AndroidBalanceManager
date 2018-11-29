@@ -1,19 +1,32 @@
 package com.msoderlund.balancemanager.activities
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.msoderlund.balancemanager.R
+import com.msoderlund.balancemanager.adapters.MainActivityAdapter
+import com.msoderlund.balancemanager.entities.Currency
+import com.msoderlund.balancemanager.entities.MoneyAccount
+import com.msoderlund.balancemanager.utils.DatabaseObject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import java.util.*
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    private val accountList = mutableListOf<MoneyAccount>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +35,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val fab: View = findViewById(R.id.add_transaction)
         fab.setOnClickListener { view ->
+            thread {
+                val currency = Currency(0, "CLP", 1.0f)
+                val newMoneyAccount = MoneyAccount(0, "Test account", false, Date(), Date(), 30,
+                    1, true, currency)
+                DatabaseObject.getInstance(this).getMoneyAccountDao().insert(newMoneyAccount)
+            }
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
@@ -35,6 +54,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        val db = DatabaseObject.getInstance(this)
+
+        viewManager = LinearLayoutManager(this)
+        viewAdapter = MainActivityAdapter(accountList)
+
+        recyclerView = findViewById<RecyclerView>(R.id.recycler_view_money_accounts).apply {
+            // use a linear layout manager
+            layoutManager = viewManager
+            // specify an viewAdapter (see also next example)
+            adapter = viewAdapter
+        }
+
+        thread {
+            accountList.addAll(db.getMoneyAccountDao().getAccounts())
+        }
     }
 
     override fun onBackPressed() {

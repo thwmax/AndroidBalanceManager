@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "money_account")
-data class MoneyAccount (@PrimaryKey var id: Int,
+data class MoneyAccount (@PrimaryKey(autoGenerate = true) var id: Int,
                          @ColumnInfo(name = "account_name") var name: String,
                          @ColumnInfo(name = "is_credit") var isCredit: Boolean,
                          @ColumnInfo(name = "creation_date") var creationDate: Date = Date(),

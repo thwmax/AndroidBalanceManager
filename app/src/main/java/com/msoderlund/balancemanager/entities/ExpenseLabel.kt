@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "expense_label")
-data class ExpenseLabel(@PrimaryKey var id: Int,
+data class ExpenseLabel(@PrimaryKey(autoGenerate = true) var id: Int,
                         @ColumnInfo(name = "account_name") var name: String,
                         @ColumnInfo(name = "creation_date") var creationDate: Date = Date(),
                         @ColumnInfo(name = "updated_at") var updatedAt: Date,

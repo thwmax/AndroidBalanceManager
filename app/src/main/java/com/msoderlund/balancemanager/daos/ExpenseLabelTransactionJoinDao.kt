@@ -30,6 +30,6 @@ interface ExpenseLabelTransactionJoinDao {
     @Query("SELECT * FROM money_transaction INNER JOIN expense_label_transaction " +
             "ON money_transaction.id=expense_label_transaction.transaction_id " +
             "WHERE expense_label_transaction.expense_label_id=:labelId " +
-            "AND money_transaction.operation_date >= startDate AND money_transaction.operation_date <= endDate")
+            "AND money_transaction.operation_date >= :startDate AND money_transaction.operation_date <= :endDate")
     fun getTransactionsForLabelInDateRange(labelId: Int, startDate: Date, endDate: Date): List<MoneyTransaction>
 }
