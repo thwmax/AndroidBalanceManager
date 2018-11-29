@@ -14,4 +14,5 @@ data class MoneyAccount (@PrimaryKey var id: Int,
                          @ColumnInfo(name = "updated_at") var updatedAt: Date,
                          @ColumnInfo(name = "billing_day") var billingDay: Int,
                          @ColumnInfo(name = "icon_id") var iconId: Int,
+                         @ColumnInfo(name = "live") var live: Boolean,
                          @Embedded var currency: Currency)
