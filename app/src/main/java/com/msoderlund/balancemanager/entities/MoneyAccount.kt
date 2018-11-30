@@ -1,9 +1,6 @@
 package com.msoderlund.balancemanager.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.util.*
 
 @Entity(tableName = "money_account")
@@ -15,4 +12,6 @@ data class MoneyAccount (@PrimaryKey(autoGenerate = true) var id: Int,
                          @ColumnInfo(name = "billing_day") var billingDay: Int,
                          @ColumnInfo(name = "icon_id") var iconId: Int,
                          @ColumnInfo(name = "live") var live: Boolean,
-                         @Embedded var currency: Currency)
+                         @Embedded var currency: Currency) {
+    @Ignore var balance: Float = 0.0f
+}

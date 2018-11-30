@@ -21,6 +21,11 @@ interface MoneyTransferDao {
     @Query("SELECT * from money_transfer where origin_account = :moneyAccount")
     fun getTransfersFromAccount(moneyAccount: Int): List<MoneyTransfer>
 
-    @Query("SELECT * from money_transfer where operation_date >= :dateStart and operation_date <= :dateEnd")
-    fun getTransfersBetweenDates(dateStart: Date, dateEnd: Date): List<MoneyTransfer>
+    @Query("SELECT * from money_transfer where operation_date >= :dateStart and operation_date <= :dateEnd " +
+            "AND destination_account = :moneyAccount")
+    fun getTransfersBetweenDatesToAccount(dateStart: Date, dateEnd: Date, moneyAccount: Int): List<MoneyTransfer>
+
+    @Query("SELECT * from money_transfer where operation_date >= :dateStart and operation_date <= :dateEnd " +
+            "AND origin_account = :moneyAccount")
+    fun getTransfersBetweenDatesFromAccount(dateStart: Date, dateEnd: Date, moneyAccount: Int): List<MoneyTransfer>
 }

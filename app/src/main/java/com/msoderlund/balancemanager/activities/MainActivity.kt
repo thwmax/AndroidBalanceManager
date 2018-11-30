@@ -1,5 +1,6 @@
 package com.msoderlund.balancemanager.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,10 +11,8 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.msoderlund.balancemanager.R
 import com.msoderlund.balancemanager.adapters.MainActivityAdapter
-import com.msoderlund.balancemanager.entities.Currency
 import com.msoderlund.balancemanager.entities.MoneyAccount
 import com.msoderlund.balancemanager.utils.DatabaseObject
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,7 +25,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+
     private val accountList = mutableListOf<MoneyAccount>()
+    private var allTimeToggle = true
+    private var startDate: Date = Date()
+    private var endDate: Date = Date()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +38,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val fab: View = findViewById(R.id.add_transaction)
         fab.setOnClickListener { view ->
-            thread {
-                val currency = Currency(0, "CLP", 1.0f)
-                val newMoneyAccount = MoneyAccount(0, "Test account", false, Date(), Date(), 30,
-                    1, true, currency)
-                DatabaseObject.getInstance(this).getMoneyAccountDao().insert(newMoneyAccount)
-            }
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val createTransaction = Intent(this, AddTransactionActivity::class.java)
+            startActivity(createTransaction)
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -54,7 +51,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-        val db = DatabaseObject.getInstance(this)
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = MainActivityAdapter(accountList)
@@ -65,10 +61,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
+    }
 
-        thread {
-            accountList.addAll(db.getMoneyAccountDao().getAccounts())
-        }
+    override fun onResume() {
+        super.onResume()
+        initAccounts()
     }
 
     override fun onBackPressed() {
@@ -77,6 +74,51 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun initAccounts() {
+        val initAccountsJob = thread {
+            val db = DatabaseObject.getInstance(this)
+            this.accountList.clear()
+            this.accountList.addAll(db.getMoneyAccountDao().getAccounts())
+        }
+        initAccountsJob.join()
+        calculateAccountBalances()
+    }
+
+    private fun calculateAccountBalances() {
+        val updateAccountsJob = thread {
+            val db = DatabaseObject.getInstance(this)
+            accountList.forEach { moneyAccount ->
+                run {
+                    var balance = 0.0f
+                    if (allTimeToggle) {
+                        val transactions = db.getMoneyTransactionDao().getTransactionsFromAccount(moneyAccount.id)
+                        val transfersDao = db.getMoneyTransferDao()
+                        val transfersToAccount = transfersDao.getTransfersToAccount(moneyAccount.id)
+                        val transfersFromAccount = transfersDao.getTransfersFromAccount(moneyAccount.id)
+                        transactions.forEach { it -> balance += it.amount }
+                        transfersToAccount.forEach { it -> balance += it.destinationAmount }
+                        transfersFromAccount.forEach { it -> balance -= it.originAmount }
+                        moneyAccount.balance = balance
+                    } else {
+                        val transactions = db.getMoneyTransactionDao().getTransactionsBetweenDatesFromAccount(startDate,
+                            endDate, moneyAccount.id)
+                        val transfersDao = db.getMoneyTransferDao()
+                        val transfersToAccount = transfersDao.getTransfersBetweenDatesToAccount(startDate,
+                            endDate, moneyAccount.id)
+                        val transfersFromAccount = transfersDao.getTransfersBetweenDatesFromAccount(startDate,
+                            endDate, moneyAccount.id)
+                        transactions.forEach { it -> balance += it.amount }
+                        transfersToAccount.forEach { it -> balance += it.destinationAmount }
+                        transfersFromAccount.forEach { it -> balance -= it.originAmount }
+                        moneyAccount.balance = balance
+                    }
+                }
+            }
+        }
+        updateAccountsJob.join()
+        this.viewAdapter.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -92,9 +134,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.action_set_current_month_period -> {
                 if (!item.isChecked) item.isChecked = true
+                this.allTimeToggle = false
+                val calendar = Calendar.getInstance(TimeZone.getDefault())
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                startDate = Date(calendar.timeInMillis)
+
+                calendar.add(Calendar.MONTH, 1)
+                calendar.add(Calendar.DATE, -1)
+                endDate = Date(calendar.timeInMillis)
+                calculateAccountBalances()
                 return true
             }
-            R.id.action_set_all_time_period -> return true
+            R.id.action_set_all_time_period -> {
+                this.allTimeToggle = true
+                calculateAccountBalances()
+                return true
+            }
             R.id.action_set_custom_period -> return true
             else -> return super.onOptionsItemSelected(item)
         }

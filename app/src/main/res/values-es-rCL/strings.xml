@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BalanceManager</string>
+    <string name="app_name">Balance Manager</string>
     <string name="nav_manage_accounts">Cuentas</string>
     <string name="navigation_drawer_open">Abrir panel de navegación</string>
     <string name="navigation_drawer_close">Cerrar panel de navegación</string>
@@ -11,4 +11,5 @@
     <string name="action_set_all_time_period">Todo</string>
     <string name="action_set_custom_period">Rango</string>
     <string name="main_activity_title">Resumen</string>
+    <string name="title_activity_add_transaction">Añadir Transacción</string>
 </resources>

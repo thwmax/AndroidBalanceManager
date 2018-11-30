@@ -18,9 +18,10 @@ interface MoneyTransactionDao {
     @Query("SELECT * from money_transaction where account_id = :moneyAccount")
     fun getTransactionsFromAccount(moneyAccount: Int): List<MoneyTransaction>
 
-    @Query("SELECT * from money_transaction where operation_date >= :date")
-    fun getTransactionsAfterDate(date: Date): List<MoneyTransaction>
+    @Query("SELECT * from money_transaction where operation_date >= :date AND account_id = :moneyAccount")
+    fun getTransactionsAfterDateFromAccount(date: Date, moneyAccount: Int): List<MoneyTransaction>
 
-    @Query("SELECT * from money_transaction where operation_date >= :dateStart and operation_date <= :dateEnd")
-    fun getTransactionsBetweenDates(dateStart: Date, dateEnd: Date): List<MoneyTransaction>
+    @Query("SELECT * from money_transaction where operation_date >= :dateStart and operation_date <= :dateEnd " +
+            "AND account_id = :moneyAccount")
+    fun getTransactionsBetweenDatesFromAccount(dateStart: Date, dateEnd: Date, moneyAccount: Int): List<MoneyTransaction>
 }
